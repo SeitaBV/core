@@ -59,7 +59,7 @@ async def test_trigger_and_get_schedule(
 
 
 async def test_post_measurements(hass: HomeAssistant, setup_fm_integration) -> None:
-    """Test that the method post measuresments is called when calling the service post_measurements."""
+    """Test that the method post measurements is called when calling the service post_measurements."""
 
     with patch(
         "flexmeasures_client.client.FlexMeasuresClient.post_measurements",
