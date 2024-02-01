@@ -29,22 +29,28 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up FlexMeasures from a config entry."""
 
     hass.data.setdefault(DOMAIN, {})
-    hass.data[DOMAIN][entry.entry_id] = entry
-    hass.data[DOMAIN]["current_id"] = entry.entry_id
 
-    config_data = dict(entry.data)
+    # remove both below as they are not used, these are to allow more than 1 integration which we dont do
+    hass.data[DOMAIN][entry.entry_id] = entry
+
+    # use entry.data directly instead of the config_data dict
+    # config_data = dict(entry.data)
     # Registers update listener to update config entry when options are updated.
-    unsub_options_update_listener = entry.add_update_listener(options_update_listener)
+    # unsub_options_update_listener = entry.add_update_listener(options_update_listener)
     # Store a reference to the unsubscribe function to cleanup if an entry is unloaded.
-    config_data["unsub_options_update_listener"] = unsub_options_update_listener
-    host, ssl = get_host_and_ssl_from_url(config_data["url"])
+    # config_data["unsub_options_update_listener"] = unsub_options_update_listener
+    host, ssl = get_host_and_ssl_from_url(entry.data["url"])
     client = FlexMeasuresClient(
         host=host,
-        email=config_data["username"],
-        password=config_data["password"],
+        email=entry.data["username"],
+        password=entry.data["password"],
         ssl=ssl,
         session=async_get_clientsession(hass),
     )
+
+    # make dataclass FRBC
+    # put all the data in the dataclass
+    # hass.data[DOMAIN] = dataclass
 
     # store config
     hass.data[DOMAIN][FRBC_CONFIG] = {
@@ -81,7 +87,6 @@ async def options_update_listener(hass: HomeAssistant, config_entry: ConfigEntry
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
-
     if DOMAIN not in hass.data:
         return True
 

@@ -27,6 +27,8 @@ from .const import (
 )
 from .exception import UndefinedCEMError, UnknownControlType
 
+# Ask no minimum set of services should be included?
+
 CHANGE_CONTROL_TYPE_SCHEMA = vol.Schema({vol.Optional("control_type"): str})
 
 SERVICES = [
