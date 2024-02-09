@@ -1,4 +1,5 @@
 """The FlexMeasures integration."""
+
 from __future__ import annotations
 
 import logging
@@ -13,6 +14,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .config_flow import get_host_and_ssl_from_url
 from .const import DOMAIN, FRBC_CONFIG
+from .control_types import FRBC_Config
 from .services import (
     async_setup_services,
     async_unload_services,
@@ -29,9 +31,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up FlexMeasures from a config entry."""
 
     hass.data.setdefault(DOMAIN, {})
-
-    # remove both below as they are not used, these are to allow more than 1 integration which we dont do
-    hass.data[DOMAIN][entry.entry_id] = entry
 
     # use entry.data directly instead of the config_data dict
     # config_data = dict(entry.data)
@@ -53,19 +52,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # hass.data[DOMAIN] = dataclass
 
     # store config
-    hass.data[DOMAIN][FRBC_CONFIG] = {
-        "power_sensor_id": get_from_option_or_config("power_sensor", entry),  # 1
-        "price_sensor_id": get_from_option_or_config(
-            "consumption_price_sensor", entry
-        ),  # 2
-        "soc_sensor_id": get_from_option_or_config("soc_sensor", entry),  # 4
-        "rm_discharge_sensor_id": get_from_option_or_config(
-            "rm_discharge_sensor", entry
-        ),  # 5
-        "schedule_duration": isodate.parse_duration(
+    FRBC_data = FRBC_Config(
+        power_sensor_id=get_from_option_or_config("power_sensor", entry),
+        price_sensor_id=get_from_option_or_config("consumption_price_sensor", entry),
+        soc_sensor_id=get_from_option_or_config("soc_sensor", entry),
+        rm_discharge_sensor_id=get_from_option_or_config("rm_discharge_sensor", entry),
+        schedule_duration=isodate.parse_duration(
             get_from_option_or_config("schedule_duration", entry)
-        ),  # PT24H
-    }
+        ),
+    )
+    hass.data[DOMAIN][FRBC_CONFIG] = FRBC_data
 
     hass.data[DOMAIN]["fm_client"] = client
 

@@ -1,4 +1,5 @@
 """View to accept incoming websocket connection."""
+
 from __future__ import annotations
 
 import asyncio
@@ -14,6 +15,7 @@ from homeassistant.components.http import HomeAssistantView
 from homeassistant.core import HomeAssistant
 
 from .const import DOMAIN, WS_VIEW_NAME, WS_VIEW_URI
+from .control_types import FRBC_Config
 
 _WS_LOGGER: Final = logging.getLogger(f"{__name__}.connection")
 
@@ -53,7 +55,8 @@ class WebSocketHandler:
         self.wsock = web.WebSocketResponse(heartbeat=55)
 
         self.cem = CEM(fm_client=hass.data[DOMAIN]["fm_client"])
-        frbc = FRBCSimple(**hass.data[DOMAIN]["frbc_config"])
+        frbc_data: FRBC_Config = hass.data[DOMAIN]["frbc_config"]
+        frbc = FRBCSimple(**frbc_data)
         hass.data[DOMAIN]["cem"] = self.cem
         self.cem.register_control_type(frbc)
 
