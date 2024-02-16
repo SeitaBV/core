@@ -15,6 +15,20 @@
           "soc_unit": "SOC unit",
           "soc_min": "Minimum SOC",
           "soc_max": "Maximum SOC"
+        },
+        "data_description": {
+          "host": "The URL of the FlexMeasures instance.",
+          "username": "The email to log in to the FlexMeasures instance.",
+          "password": "The password to log in to the FlexMeasures instance.",
+          "power_sensor": "The sensor that provides the power data.",
+          "consumption_price_sensor": "The sensor that provides the consumption price data.",
+          "production_price_sensor": "The sensor that provides the production price data. Can be the same as the consumption price sensor.",
+          "soc_sensor": "The sensor that provides the state of charge data.",
+          "rm_discharge_sensor": "The sensor that provides the resource manager discharge data.",
+          "schedule_duration": "The duration of the schedule in minutes.",
+          "soc_unit": "The unit of the state of charge.",
+          "soc_min": "The minimum state of charge.",
+          "soc_max": "The maximum state of charge."
         }
       }
     },

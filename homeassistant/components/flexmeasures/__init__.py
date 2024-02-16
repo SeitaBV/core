@@ -5,12 +5,13 @@ from __future__ import annotations
 import logging
 
 from flexmeasures_client import FlexMeasuresClient
-import isodate
 
+# import isodate
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.util.dt import parse_duration
 
 from .config_flow import get_host_and_ssl_from_url
 from .const import DOMAIN, FRBC_CONFIG
@@ -52,12 +53,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # hass.data[DOMAIN] = dataclass
 
     # store config
+    # if shcedule_duration is not set, throw an error
+    if not entry.data.get("schedule_duration"):
+        _LOGGER.error("Schedule duration is not set")
+        return False
     FRBC_data = FRBC_Config(
         power_sensor_id=get_from_option_or_config("power_sensor", entry),
         price_sensor_id=get_from_option_or_config("consumption_price_sensor", entry),
         soc_sensor_id=get_from_option_or_config("soc_sensor", entry),
         rm_discharge_sensor_id=get_from_option_or_config("rm_discharge_sensor", entry),
-        schedule_duration=isodate.parse_duration(
+        schedule_duration=parse_duration(
             get_from_option_or_config("schedule_duration", entry)
         ),
     )

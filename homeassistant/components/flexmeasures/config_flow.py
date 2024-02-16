@@ -1,4 +1,5 @@
 """Config flow for FlexMeasures integration."""
+
 from __future__ import annotations
 
 import logging
@@ -24,7 +25,8 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
             "url", description={"suggested_value": "http://localhost:5000"}
         ): str,
         vol.Required(
-            "username", description={"suggested_value": "toy-user@flexmeasures.io"}
+            "username",
+            description={"suggested_value": "toy-user@flexmeasures.io"},
         ): str,
         vol.Required("password"): str,
         vol.Required("power_sensor", description={"suggested_value": 1}): int,
