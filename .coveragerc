@@ -1657,8 +1657,6 @@ omit =
     homeassistant/components/electrasmart/climate.py
     homeassistant/components/electrasmart/__init__.py
     homeassistant/components/flexmeasures/__init__.py
-    homeassistant/components/flexmeasures/const.py
-    homeassistant/components/flexmeasures/exception.py
 
 
 [report]
