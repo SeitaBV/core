@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+from dataclasses import asdict
 import logging
 from typing import Any, Final
 
@@ -56,7 +57,7 @@ class WebSocketHandler:
 
         self.cem = CEM(fm_client=hass.data[DOMAIN]["fm_client"])
         frbc_data: FRBC_Config = hass.data[DOMAIN]["frbc_config"]
-        frbc = FRBCSimple(**frbc_data)
+        frbc = FRBCSimple(**asdict(frbc_data))
         hass.data[DOMAIN]["cem"] = self.cem
         self.cem.register_control_type(frbc)
 
