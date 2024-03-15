@@ -1,6 +1,4 @@
 """Test initialization of FlexMeasures integration."""
-# pytest ./tests/components/flexmeasures/ --cov=homeassistant.components.flexmeasures --cov-report term-missing -vv
-
 
 from homeassistant.components.flexmeasures.const import DOMAIN
 from homeassistant.components.flexmeasures.services import SERVICES
