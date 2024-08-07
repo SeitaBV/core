@@ -2,6 +2,7 @@
 from unittest.mock import patch
 
 from homeassistant import config_entries, data_entry_flow
+from homeassistant.components.flexmeasures.config_flow import SCHEMA
 from homeassistant.components.flexmeasures.const import DOMAIN
 from homeassistant.core import HomeAssistant
 
@@ -11,7 +12,7 @@ CONFIG = {
     "url": "http://localhost:5000",
     "power_sensor": 1,
     "soc_sensor": 3,
-    "rm_discharge_sensor": 4,
+    "rm_discharge_sensor_id": 4,
     "schedule_duration": "PT24H",
     "consumption_price_sensor": 2,
     "production_price_sensor": 2,
@@ -28,12 +29,11 @@ async def test_form(hass: HomeAssistant) -> None:
         DOMAIN, context={"source": config_entries.SOURCE_USER}
     )
 
-    assert result["type"] == "form"
+    assert result["type"] == data_entry_flow.FlowResultType.FORM
     assert (result["errors"] == {}) or result["errors"] is None
 
     with patch(
-        "homeassistant.components.flexmeasures.config_flow.validate_input",
-        return_value={"title": "FlexMeasures"},
+        "flexmeasures_client.FlexMeasuresClient.get_access_token",
     ) as mock_validate_input, patch(
         "homeassistant.components.flexmeasures.async_setup_entry",
         return_value=True,
@@ -44,9 +44,16 @@ async def test_form(hass: HomeAssistant) -> None:
         )
         await hass.async_block_till_done()
 
-    assert result2["type"] == data_entry_flow.FlowResultType.CREATE_ENTRY
-    assert result2["title"] == "FlexMeasures"
-    assert result2["data"] == CONFIG
+        assert result2["type"] == data_entry_flow.FlowResultType.CREATE_ENTRY
+        assert result2["title"] == "FlexMeasures"
 
-    mock_setup_entry.assert_called_once()
-    mock_validate_input.assert_called_once()
+        fields = {str(key): key for key in SCHEMA.schema}
+
+        for key, val in result2["options"].items():
+            if key in CONFIG:
+                assert val == CONFIG[key]
+            else:
+                assert val == fields[key].default()
+
+        mock_setup_entry.assert_called_once()
+        mock_validate_input.assert_called_once()

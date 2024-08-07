@@ -3,9 +3,8 @@
 from datetime import datetime
 from unittest.mock import patch
 
-from flexmeasures_client.s2.python_s2_protocol.common.schemas import ControlType
-import isodate
 import pytest
+from s2python.common import ControlType
 
 from homeassistant.components.flexmeasures.const import (
     DOMAIN,
@@ -15,6 +14,7 @@ from homeassistant.components.flexmeasures.const import (
 from homeassistant.components.flexmeasures.services import time_ceil
 from homeassistant.core import HomeAssistant
 import homeassistant.util.dt as dt_util
+from homeassistant.util.dt import parse_duration
 
 
 @pytest.mark.skip(
@@ -58,9 +58,7 @@ async def test_trigger_and_get_schedule(
         tzinfo = dt_util.get_time_zone(hass.config.time_zone)
         mocked_FlexmeasuresClient.assert_awaited_with(
             sensor_id=1,
-            start=time_ceil(
-                datetime.now(tz=tzinfo), isodate.parse_duration(RESOLUTION)
-            ),
+            start=time_ceil(datetime.now(tz=tzinfo), parse_duration(RESOLUTION)),
             duration="PT24H",
             flex_model={
                 "soc-unit": "kWh",

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import fields
 import logging
 
 from flexmeasures_client import FlexMeasuresClient
@@ -10,8 +11,8 @@ from flexmeasures_client import FlexMeasuresClient
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigValidationError
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.util.dt import parse_duration
 
 from .config_flow import get_host_and_ssl_from_url
 from .const import DOMAIN, FRBC_CONFIG
@@ -39,38 +40,34 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # unsub_options_update_listener = entry.add_update_listener(options_update_listener)
     # Store a reference to the unsubscribe function to cleanup if an entry is unloaded.
     # config_data["unsub_options_update_listener"] = unsub_options_update_listener
-    host, ssl = get_host_and_ssl_from_url(entry.data["url"])
+
+    host, ssl = get_host_and_ssl_from_url(get_from_option_or_config("url", entry))
     client = FlexMeasuresClient(
         host=host,
-        email=entry.data["username"],
-        password=entry.data["password"],
+        email=get_from_option_or_config("username", entry),
+        password=get_from_option_or_config("password", entry),
         ssl=ssl,
         session=async_get_clientsession(hass),
     )
 
-    # make dataclass FRBC
-    # put all the data in the dataclass
-    # hass.data[DOMAIN] = dataclass
-
     # store config
     # if shcedule_duration is not set, throw an error
-    if not entry.data.get("schedule_duration"):
-        _LOGGER.error("Schedule duration is not set")
-        return False
-    FRBC_data = FRBC_Config(
-        power_sensor_id=get_from_option_or_config("power_sensor", entry),
-        price_sensor_id=get_from_option_or_config("consumption_price_sensor", entry),
-        soc_sensor_id=get_from_option_or_config("soc_sensor", entry),
-        rm_discharge_sensor_id=get_from_option_or_config("rm_discharge_sensor", entry),
-        schedule_duration=parse_duration(
-            get_from_option_or_config("schedule_duration", entry)
-        ),
-    )
+    if get_from_option_or_config("schedule_duration", entry) is None:
+        raise ConfigValidationError(
+            message="Schedule duration is not set", exceptions=[]
+        )
+
+    frbc_data_dict = {}
+
+    for field in fields(FRBC_Config):
+        frbc_data_dict[field.name] = get_from_option_or_config(field.name, entry)
+
+    FRBC_data = FRBC_Config(**frbc_data_dict)
     hass.data[DOMAIN][FRBC_CONFIG] = FRBC_data
 
     hass.data[DOMAIN]["fm_client"] = client
 
-    hass.http.register_view(WebsocketAPIView())
+    hass.http.register_view(WebsocketAPIView(entry))
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
