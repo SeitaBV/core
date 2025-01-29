@@ -7,8 +7,8 @@ from typing import cast
 
 from flexmeasures_client import FlexMeasuresClient
 from flexmeasures_client.s2.cem import CEM
-from flexmeasures_client.s2.python_s2_protocol.common.schemas import ControlType
 import pandas as pd
+from s2python.common import ControlType
 import voluptuous as vol
 
 from homeassistant.config_entries import ConfigEntry
