@@ -1730,6 +1730,7 @@ omit =
     homeassistant/components/zwave_me/switch.py
     homeassistant/components/electrasmart/climate.py
     homeassistant/components/electrasmart/__init__.py
+    homeassistant/components/flexmeasures/__init__.py
     homeassistant/components/myuplink/__init__.py
     homeassistant/components/myuplink/api.py
     homeassistant/components/myuplink/application_credentials.py

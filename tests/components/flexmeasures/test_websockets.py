@@ -10,7 +10,7 @@ async def test_producer_consumer(
 ):
     """Test websocket connection."""
     message = {
-        "message_id": "1234-1234-1234-1234",
+        "message_id": "2bdec96b-be3b-4ba9-afa0-c4a0632cced3",
         "role": "RM",
         "supported_protocol_versions": ["0.1.0"],
         "message_type": "Handshake",
@@ -18,4 +18,5 @@ async def test_producer_consumer(
     await fm_websocket_client.send_json(message)
     msg = await fm_websocket_client.receive_json()
 
-    assert msg["message_type"] == "HandshakeResponse"
+    assert msg["message_type"] == "Handshake"
+    assert msg["role"] == "CEM"

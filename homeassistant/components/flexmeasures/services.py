@@ -7,8 +7,8 @@ from typing import cast
 
 from flexmeasures_client import FlexMeasuresClient
 from flexmeasures_client.s2.cem import CEM
-from flexmeasures_client.s2.python_s2_protocol.common.schemas import ControlType
 import pandas as pd
+from s2python.common import ControlType
 import voluptuous as vol
 
 from homeassistant.config_entries import ConfigEntry
@@ -26,6 +26,8 @@ from .const import (
     SOC_UNIT,
 )
 from .exception import UndefinedCEMError, UnknownControlType
+
+# Ask no minimum set of services should be included?
 
 CHANGE_CONTROL_TYPE_SCHEMA = vol.Schema({vol.Optional("control_type"): str})
 
